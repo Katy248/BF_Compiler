@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Linq;
-/// Important!
-/// 
-/// Do not close cycle before open it, it can't be checked // no longer relevant
 
 /// Using examples
 /// 
@@ -23,15 +20,14 @@ using System.Linq;
 ///     Messages = Error.Output;
 /// </code>
 /// 
+
 namespace BF_Compiler
 {
     public static class BF
     {
-        /*public*/
-        public static int[] Array;
+        public static int[] array;
         public static string output;
 
-        /*private*/
         static int currentElement;
         static int currentInputSymbol;
         enum Commands
@@ -46,14 +42,14 @@ namespace BF_Compiler
             WhileEnd = ']',
         }
         static string[] Status = new string[] { "Done with result:\n", "Stopped because of:\n" };
-        const int MaxElementSize = int.MaxValue;
-        const int MinElementSize = 0;
+        const int maxElementSize = int.MaxValue;
+        const int minElementSize = 0;
 
         public static string Compilate(string Text, string Input)
         {
             /*Initialize Array with zero*/
-            Array = new int[3000];
-            for (int i = 0; i < Array.Length; i++) Array[i] = MinElementSize;
+            array = new int[3000];
+            for (int i = 0; i < array.Length; i++) array[i] = minElementSize;
             
             /*Reseting*/
             output = "";
@@ -71,29 +67,29 @@ namespace BF_Compiler
                     switch ((Commands)Text[SymNum])
                     {
                         case Commands.Next:
-                            if (currentElement < Array.Length - 1) currentElement++;
+                            if (currentElement < array.Length - 1) currentElement++;
                             break;
                         case Commands.Previous:
                             if (currentElement > 0) currentElement--;
                             break;
                         case Commands.Plus:
-                            if (Array[currentElement] < MaxElementSize) Array[currentElement]++;
+                            if (array[currentElement] < maxElementSize) array[currentElement]++;
                             break;
                         case Commands.Minus:
-                            if (Array[currentElement] > MinElementSize) Array[currentElement]--;
+                            if (array[currentElement] > minElementSize) array[currentElement]--;
                             break;
                         case Commands.Out:
-                            output += (char)Array[currentElement];
+                            output += (char)array[currentElement];
                             break;
                         case Commands.In:
                             if (currentInputSymbol < Input.Length)
                             {
-                                Array[currentElement] = Input[currentInputSymbol];
+                                array[currentElement] = Input[currentInputSymbol];
                                 currentInputSymbol++;
                             }
                             break;
                         case Commands.WhileStart:
-                            if (Array[currentElement] == 0)
+                            if (array[currentElement] == 0)
                             {
                                 int CycleEnds = 1;
                                 while (CycleEnds > 0 && SymNum < Text.Length)
@@ -105,7 +101,7 @@ namespace BF_Compiler
                             }
                             break;
                         case Commands.WhileEnd:
-                            if (Array[currentElement] > 0)
+                            if (array[currentElement] > 0)
                             {
                                 int CycleStarts = 1;
                                 while (CycleStarts > 0 && SymNum >= 0)
@@ -118,7 +114,7 @@ namespace BF_Compiler
                             break;
                     }
                 }
-            Array = null;
+            array = null;
             GC.Collect();
             return Status[Error.CriticalFounded() ? (1) : (0)] + (Error.CriticalFounded() ? (output + "\n") : "") + Error.Output();
         }
