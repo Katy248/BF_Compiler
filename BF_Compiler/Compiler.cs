@@ -41,30 +41,26 @@ namespace BF_Compiler
             WhileStart = '[',
             WhileEnd = ']',
         }
-        static string[] status = new string[] { "Done with result:\n", "Stopped because of:\n" };
+        static readonly string[] status = new string[] { "Done with result:\n", "Stopped because of:\n" };
         const int maxElementSize = int.MaxValue;
         const int minElementSize = 0;
 
-        public static string Compilate(string Text, string Input)
+        public static string Compilate(string text, string input)
         {
-            /*Initialize Array with zero*/
             array = new int[3000];
             for (int i = 0; i < array.Length; i++) array[i] = minElementSize;
             
-            /*Reseting*/
             output = "";
             currentElement = 0;
             currentInputSymbol = 0;
             foreach (Error Er in Error.Errors) Er.Reset();
             
-            /*Errors checking*/
-            TextIdentificate(Text, Input);
+            TextIdentificate(text, input);
             
-            /*Interpritate*/
             if (!Error.CriticalFounded())
-                for (int SymNum = 0; SymNum < Text.Length; SymNum++)
+                for (int symNum = 0; symNum < text.Length; symNum++)
                 {
-                    switch ((Commands)Text[SymNum])
+                    switch ((Commands)text[symNum])
                     {
                         case Commands.Next:
                             if (currentElement < array.Length - 1) currentElement++;
@@ -82,33 +78,33 @@ namespace BF_Compiler
                             output += (char)array[currentElement];
                             break;
                         case Commands.In:
-                            if (currentInputSymbol < Input.Length)
+                            if (currentInputSymbol < input.Length)
                             {
-                                array[currentElement] = Input[currentInputSymbol];
+                                array[currentElement] = input[currentInputSymbol];
                                 currentInputSymbol++;
                             }
                             break;
                         case Commands.WhileStart:
                             if (array[currentElement] == 0)
                             {
-                                int CycleEnds = 1;
-                                while (CycleEnds > 0 && SymNum < Text.Length)
+                                int cycleEnds = 1;
+                                while (cycleEnds > 0 && symNum < text.Length)
                                 {
-                                    SymNum++;
-                                    if (Text[SymNum] == ']') CycleEnds--;
-                                    if (Text[SymNum] == '[') CycleEnds++;
+                                    symNum++;
+                                    if (text[symNum] == ']') cycleEnds--;
+                                    if (text[symNum] == '[') cycleEnds++;
                                 }
                             }
                             break;
                         case Commands.WhileEnd:
                             if (array[currentElement] > 0)
                             {
-                                int CycleStarts = 1;
-                                while (CycleStarts > 0 && SymNum >= 0)
+                                int cycleStarts = 1;
+                                while (cycleStarts > 0 && symNum >= 0)
                                 {
-                                    SymNum--;
-                                    if (Text[SymNum] == '[') CycleStarts--;
-                                    if (Text[SymNum] == ']') CycleStarts++;
+                                    symNum--;
+                                    if (text[symNum] == '[') cycleStarts--;
+                                    if (text[symNum] == ']') cycleStarts++;
                                 }
                             }
                             break;
