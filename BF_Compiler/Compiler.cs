@@ -41,7 +41,7 @@ namespace BF_Compiler
             WhileStart = '[',
             WhileEnd = ']',
         }
-        static string[] Status = new string[] { "Done with result:\n", "Stopped because of:\n" };
+        static string[] status = new string[] { "Done with result:\n", "Stopped because of:\n" };
         const int maxElementSize = int.MaxValue;
         const int minElementSize = 0;
 
@@ -116,7 +116,7 @@ namespace BF_Compiler
                 }
             array = null;
             GC.Collect();
-            return Status[Error.CriticalFounded() ? (1) : (0)] + (Error.CriticalFounded() ? (output + "\n") : "") + Error.Output();
+            return status[Error.CriticalFounded() ? (1) : (0)] + (Error.CriticalFounded() ? (output + "\n") : "") + Error.Output();
         }
         public static void TextIdentificate(string Text, string Input)
         {
