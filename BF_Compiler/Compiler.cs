@@ -27,7 +27,6 @@ namespace BF_Compiler
     {
         public static int[] array;
         public static string output;
-
         static int currentElement;
         static int currentInputSymbol;
         enum Commands
