@@ -5,19 +5,19 @@ using System.Linq;
 /// 
 /// To get formatted output (with messages) use:
 /// <code>
-///     FormattedOutput = Compilate(Text, Input);
+///     string FormattedOutput = Compilate(Text, Input);
 /// </code>
 /// 
 /// If you want to get only output without formatting use:
 /// <code>
 ///     Compilate(Text, Input);
-///     Output = BF.Output;
+///     string Output = BF.output;
 /// </code>
 /// 
 /// If you want to get only messages use:
 /// <code>
 ///     Compilate(Text, Input);
-///     Messages = Error.Output;
+///     string Messages = Error.Output;
 /// </code>
 /// 
 
