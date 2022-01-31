@@ -26,30 +26,20 @@ namespace BF_Compiler
     public static class BF
     {
         public static int[] array;
-        public static string output;
+        public static string Output;
         static int currentElement;
         static int currentInputSymbol;
-        enum Commands
-        {
-            Next = '>',
-            Previous = '<',
-            Plus = '+',
-            Minus = '-',
-            Out = '.',
-            In = ',',
-            WhileStart = '[',
-            WhileEnd = ']',
-        }
-        static readonly string[] status = new string[] { "Done with result:\n", "Stopped because of:\n" };
-        const int maxElementSize = int.MaxValue;
-        const int minElementSize = 0;
+        
+        static readonly string[] Status = new string[] { "Done with result:\n", "Stopped because of:\n" };
+        const int MaxElementSize = int.MaxValue;
+        const int MinElementSize = 0;
 
         public static string Compilate(string text, string input)
         {
             array = new int[3000];
-            for (int i = 0; i < array.Length; i++) array[i] = minElementSize;
+            for (int i = 0; i < array.Length; i++) array[i] = MinElementSize;
             
-            output = "";
+            Output = "";
             currentElement = 0;
             currentInputSymbol = 0;
             foreach (Error Er in Error.Errors) Er.Reset();
@@ -68,13 +58,13 @@ namespace BF_Compiler
                             if (currentElement > 0) currentElement--;
                             break;
                         case Commands.Plus:
-                            if (array[currentElement] < maxElementSize) array[currentElement]++;
+                            if (array[currentElement] < MaxElementSize) array[currentElement]++;
                             break;
                         case Commands.Minus:
-                            if (array[currentElement] > minElementSize) array[currentElement]--;
+                            if (array[currentElement] > MinElementSize) array[currentElement]--;
                             break;
                         case Commands.Out:
-                            output += (char)array[currentElement];
+                            Output += (char)array[currentElement];
                             break;
                         case Commands.In:
                             if (currentInputSymbol < input.Length)
@@ -111,13 +101,15 @@ namespace BF_Compiler
                 }
             array = null;
             GC.Collect();
-            return status[Error.CriticalFounded() ? (1) : (0)] + (Error.CriticalFounded() ? (output + "\n") : "") + Error.Output();
+            return Status[Error.CriticalFounded() ? (1) : (0)] + (Error.CriticalFounded() ? (Output + "\n") : "") + Error.Output();
         }
-        public static void TextIdentificate(string Text, string Input)
+        static void TextIdentificate(string Text, string Input)
         {
+            //Input length checking
             if (Text.Count(f => f == ',') > Input.Length)
                 ErShortInput.Found();
 
+            //Cycle writing correctness checking
             (int cycleStart, int cycleEnd) = (0, 0);
             for (int i = 0; i < Text.Length; i++)
             {
@@ -134,9 +126,21 @@ namespace BF_Compiler
             }
             if (cycleEnd < cycleStart) ErCycleWithNoCloseing.Found();
         }
+        enum Commands
+        {
+            Next = '>',
+            Previous = '<',
+            Plus = '+',
+            Minus = '-',
+            Out = '.',
+            In = ',',
+            WhileStart = '[',
+            WhileEnd = ']',
+        }
+
         /*errors*/
-        static Error ErEarlyCycleCloseing = new Critical("Cycle was not opened before closeing");
-        static Error ErCycleWithNoCloseing = new Warning("Cycle was not closed");
-        static Error ErShortInput = new Warning("Input text is too short");
+        public static Error ErEarlyCycleCloseing = new Critical("Cycle was not opened before closeing");
+        public static Error ErCycleWithNoCloseing = new Warning("Cycle was not closed");
+        public static Error ErShortInput = new Warning("Input text is too short");
     }
 }

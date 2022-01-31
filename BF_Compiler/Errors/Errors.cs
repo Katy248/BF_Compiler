@@ -6,7 +6,7 @@ namespace BF_Compiler
     public abstract class Error
     {
         public static List<Error> Errors = new List<Error>();
-        protected static string[] ErrorTypes = new string[] { "Critical", "Warning" };
+        protected readonly static string[] ErrorTypes = new string[] { "Critical", "Warning" };
 
         public string Text { get; protected set; }
         public bool IsFounded;
