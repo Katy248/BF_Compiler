@@ -12,6 +12,11 @@ namespace BF_Compiler
         public bool IsFounded;
         protected string TypeName;
 
+        public static void ResetAll()
+        {
+            foreach (Error Er in Errors) Er.Reset();
+        }
+
         public static string Output()
         {
             string Text = "";
@@ -21,7 +26,7 @@ namespace BF_Compiler
             }
             return Text;
         }
-        public static bool CriticalFounded()
+        public static bool FoundedCritical()
         {
             bool CrFound = false;
             foreach (Error Er in Errors)

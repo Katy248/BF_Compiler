@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
 
 /// Using examples
 /// 
@@ -25,8 +26,9 @@ namespace BF_Compiler
 {
     public static class BF
     {
-        public static int[] array;
-        public static string Output;
+        private static int[] Array { get; set; }
+        public static int ArrayLength { get; set; } = 3000;
+        public static string Output { get; private set; }
         static int currentElement;
         static int currentInputSymbol;
         
@@ -34,75 +36,83 @@ namespace BF_Compiler
         const int MaxElementSize = int.MaxValue;
         const int MinElementSize = 0;
 
-        public static string Compilate(string text, string input)
+        public static string Compile(string text, string input)
         {
-            array = new int[3000];
-            for (int i = 0; i < array.Length; i++) array[i] = MinElementSize;
+            Array = new int[ArrayLength];
+            Array.Initialize();
             
             Output = "";
             currentElement = 0;
             currentInputSymbol = 0;
-            foreach (Error Er in Error.Errors) Er.Reset();
+
+            Error.ResetAll();
             
             TextIdentificate(text, input);
-            
-            if (!Error.CriticalFounded())
-                for (int symNum = 0; symNum < text.Length; symNum++)
-                {
-                    switch ((Commands)text[symNum])
-                    {
-                        case Commands.Next:
-                            if (currentElement < array.Length - 1) currentElement++;
-                            break;
-                        case Commands.Previous:
-                            if (currentElement > 0) currentElement--;
-                            break;
-                        case Commands.Plus:
-                            if (array[currentElement] < MaxElementSize) array[currentElement]++;
-                            break;
-                        case Commands.Minus:
-                            if (array[currentElement] > MinElementSize) array[currentElement]--;
-                            break;
-                        case Commands.Out:
-                            Output += (char)array[currentElement];
-                            break;
-                        case Commands.In:
-                            if (currentInputSymbol < input.Length)
-                            {
-                                array[currentElement] = input[currentInputSymbol];
-                                currentInputSymbol++;
-                            }
-                            break;
-                        case Commands.WhileStart:
-                            if (array[currentElement] == 0)
-                            {
-                                int cycleEnds = 1;
-                                while (cycleEnds > 0 && symNum < text.Length)
-                                {
-                                    symNum++;
-                                    if (text[symNum] == ']') cycleEnds--;
-                                    if (text[symNum] == '[') cycleEnds++;
-                                }
-                            }
-                            break;
-                        case Commands.WhileEnd:
-                            if (array[currentElement] > 0)
-                            {
-                                int cycleStarts = 1;
-                                while (cycleStarts > 0 && symNum >= 0)
-                                {
-                                    symNum--;
-                                    if (text[symNum] == '[') cycleStarts--;
-                                    if (text[symNum] == ']') cycleStarts++;
-                                }
-                            }
-                            break;
-                    }
-                }
-            array = null;
+
+            if (!Error.FoundedCritical()) 
+                InterpretBySym(text, input);
+                
+            Array = null;
             GC.Collect();
-            return Status[Error.CriticalFounded() ? (1) : (0)] + (Error.CriticalFounded() ? (Output + "\n") : "") + Error.Output();
+            return Status[Error.FoundedCritical() ? (1) : (0)] 
+                + (Error.FoundedCritical() ? (Output + "\n") : "") 
+                    + Error.Output();//1-bad, 0-good
         }
+
+        static void InterpretBySym(string text, string input)
+	    {
+            for (int symNum = 0; symNum < text.Length; symNum++)
+                switch ((Commands)text[symNum])
+                {
+                    case Commands.Next:
+                        if (currentElement < Array.Length - 1) currentElement++;
+                        break;
+                    case Commands.Previous:
+                        if (currentElement > 0) currentElement--;
+                        break;
+                    case Commands.Plus:
+                        if (Array[currentElement] < MaxElementSize) Array[currentElement]++;
+                        break;
+                    case Commands.Minus:
+                        if (Array[currentElement] > MinElementSize) Array[currentElement]--;
+                        break;
+                    case Commands.Out:
+                        Output += (char)Array[currentElement];
+                        break;
+                    case Commands.In:
+                        if (currentInputSymbol < input.Length)
+                        {
+                            Array[currentElement] = input[currentInputSymbol];
+                            currentInputSymbol++;
+                        }
+                        break;
+                    case Commands.WhileStart:
+                        if (Array[currentElement] == 0)
+                        {
+                            int cycleEnds = 1;
+                            while (cycleEnds > 0 && symNum < text.Length)
+                            {
+                                symNum++;
+                                if (text[symNum] == ']') cycleEnds--;
+                                if (text[symNum] == '[') cycleEnds++;
+                            }
+                        }
+                        break;
+                    case Commands.WhileEnd:
+                        if (Array[currentElement] > 0)
+                        {
+                            int cycleStarts = 1;
+                            while (cycleStarts > 0 && symNum >= 0)
+                            {
+                                symNum--;
+                                if (text[symNum] == '[') cycleStarts--;
+                                if (text[symNum] == ']') cycleStarts++;
+                            }
+                        }
+                        break;
+                }
+        }
+
         static void TextIdentificate(string Text, string Input)
         {
             //Input length checking
@@ -142,5 +152,7 @@ namespace BF_Compiler
         public static Error ErEarlyCycleCloseing = new Critical("Cycle was not opened before closeing");
         public static Error ErCycleWithNoCloseing = new Warning("Cycle was not closed");
         public static Error ErShortInput = new Warning("Input text is too short");
+        public static Error ErElementLessMin = new Warning("Value in element is less than Min");
+        public static Error ErElementOverMax = new Warning("Value in element is over than Max");
     }
 }
