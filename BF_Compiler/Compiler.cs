@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Linq.Expressions;
-
-/// Using examples
+#region Using examples
 /// 
 /// To get formatted output (with messages) use:
 /// <code>
@@ -21,13 +19,17 @@ using System.Linq.Expressions;
 ///     string Messages = Error.Output;
 /// </code>
 /// 
-
+#endregion
 namespace BF_Compiler
 {
     public static class BF
     {
         private static int[] Array { get; set; }
-        public static int ArrayLength { get; set; } = 3000;
+        public static int ArrayLength
+        {
+            get => ArrayLength; 
+            set => ArrayLength = (value > 0) ? (value) : (3000);
+        }
         public static string Output { get; private set; }
         static int currentElement;
         static int currentInputSymbol;
@@ -148,11 +150,14 @@ namespace BF_Compiler
             WhileEnd = ']',
         }
 
-        /*errors*/
+        #region Errors/Warnings
+
         public static Error ErEarlyCycleCloseing = new Critical("Cycle was not opened before closeing");
         public static Error ErCycleWithNoCloseing = new Warning("Cycle was not closed");
         public static Error ErShortInput = new Warning("Input text is too short");
         public static Error ErElementLessMin = new Warning("Value in element is less than Min");
         public static Error ErElementOverMax = new Warning("Value in element is over than Max");
+
+        #endregion
     }
 }
