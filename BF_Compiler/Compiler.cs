@@ -25,10 +25,11 @@ namespace BF_Compiler
     public static class BF
     {
         private static int[] Array { get; set; }
+        private static int arrayLength = 3000;
         public static int ArrayLength
         {
-            get => ArrayLength; 
-            set => ArrayLength = (value > 0) ? (value) : (3000);
+            get => arrayLength; 
+            set => arrayLength = (value > 0) ? (value) : (3000);
         }
         public static string Output { get; private set; }
         static int currentElement;
@@ -40,7 +41,7 @@ namespace BF_Compiler
 
         public static string Compile(string text, string input)
         {
-            Array = new int[ArrayLength];
+            Array = new int[arrayLength];
             Array.Initialize();
             
             Output = "";
@@ -95,8 +96,8 @@ namespace BF_Compiler
                             while (cycleEnds > 0 && symNum < text.Length)
                             {
                                 symNum++;
-                                if (text[symNum] == ']') cycleEnds--;
-                                if (text[symNum] == '[') cycleEnds++;
+                                if (text[symNum] == (char)Commands.WhileEnd) cycleEnds--;
+                                if (text[symNum] == (char)Commands.WhileStart) cycleEnds++;
                             }
                         }
                         break;
@@ -107,8 +108,8 @@ namespace BF_Compiler
                             while (cycleStarts > 0 && symNum >= 0)
                             {
                                 symNum--;
-                                if (text[symNum] == '[') cycleStarts--;
-                                if (text[symNum] == ']') cycleStarts++;
+                                if (text[symNum] == (char)Commands.WhileEnd) cycleStarts--;
+                                if (text[symNum] == (char)Commands.WhileStart) cycleStarts++;
                             }
                         }
                         break;
@@ -118,7 +119,7 @@ namespace BF_Compiler
         static void TextIdentificate(string Text, string Input)
         {
             //Input length checking
-            if (Text.Count(f => f == ',') > Input.Length)
+            if (Text.Count(f => f == (char)Commands.In) > Input.Length)
                 ErShortInput.Found();
 
             //Cycle writing correctness checking
